@@ -1,0 +1,143 @@
+﻿1.
+SELECT
+    topicid,
+    COUNT(*) AS total_blurts
+FROM
+    blurt_analysis
+GROUP BY
+    topicid;
+
+
+2.
+SELECT
+    SUBSTRING_INDEX(SUBSTRING_INDEX(email, '@', 1), '_', 1) AS first_name,
+    SUBSTRING_INDEX(SUBSTRING_INDEX(email, '@', 1), '_', -1) AS last_name,
+    website
+FROM
+    celebrity
+WHERE
+    kind = 'Tennis Player';
+
+
+3.
+SELECT * FROM bank.advertisement;
+
+
+4.
+SELECT
+    u.email,
+    u.password,
+    u.name,
+    u.date_of_birth,
+    c.kind
+FROM
+    user u
+JOIN
+    celebrity c ON u.email = c.email
+LEFT JOIN
+    follow f ON u.email = f.follower
+WHERE
+        c.kind = 'MovieStar'
+    
+    AND f.follower IS NULL;
+
+
+5.
+
+
+SELECT
+    va.email AS ambassador_email,
+    COUNT(f.follower) AS follower_count
+FROM
+    vendor_ambassador va
+LEFT JOIN
+    follow f ON va.email = f.followee
+GROUP BY
+    va.email
+HAVING
+    follower_count >= 30 AND follower_count <= 80
+ORDER BY
+    follower_count DESC;
+
+
+6.
+
+
+SELECT DISTINCT
+    CASE WHEN a.email < b.email THEN a.email ELSE b.email END AS email1,
+    CASE WHEN a.email < b.email THEN b.email ELSE a.email END AS email2,
+    a.topicid
+FROM
+    blurt_analysis a
+JOIN
+    blurt_analysis b ON a.topicid = b.topicid
+    AND a.email != b.email
+LEFT JOIN
+    follow f ON a.email = f.follower AND b.email = f.followee
+WHERE
+    f.follower IS NULL;
+
+
+7.
+
+SELECT
+    u.name AS celebrity_name,
+    COUNT(b.blurtid) AS blurt_count
+FROM
+    user u
+JOIN
+    celebrity c ON u.email = c.email
+LEFT JOIN
+    blurt b ON u.email = b.email
+GROUP BY
+    u.name;
+SELECT
+    u.name AS celebrity_name,
+    COUNT(b.blurtid) AS blurt_count
+FROM
+    user u
+JOIN
+    celebrity c ON u.email = c.email
+LEFT JOIN
+    blurt b ON u.email = b.email
+GROUP BY
+    u.name
+ORDER BY
+    blurt_count DESC;
+
+
+
+
+8.
+
+
+SELECT
+    v.name AS vendor_name,
+    va.email AS ambassador_email,
+    COUNT(f.follower) AS follower_count
+FROM
+    vendor v
+JOIN
+    vendor_ambassador va ON v.id = va.vendorid
+LEFT JOIN
+    follow f ON va.email = f.followee
+GROUP BY
+    v.name, va.email
+
+
+9.
+
+
+SELECT
+    v.id,
+    v.name AS vendor_name,
+    va.email AS ambassador_email,
+    COUNT(a.id) AS total_advertisements
+FROM
+    vendor v
+JOIN
+    vendor_ambassador va ON v.id = va.vendorid
+LEFT JOIN
+    advertisement a ON v.id = a.vendorid
+GROUP BY
+    v.id, v.name, va.email;
